@@ -131,7 +131,7 @@ These are created by the SQL seed script (`003_seed_data.sql`) or by calling `PO
 | Email | Password |
 |---|---|
 | `demo@taskmanager.io` | `Demo1234!` |
-| `admin` | `admin@taskmanager.io` | `Admin1234!` |
+| `admin@taskmanager.io` | `Admin1234!` |
 
 ## Manual Setup
 

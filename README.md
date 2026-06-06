@@ -575,7 +575,7 @@ All error responses follow **RFC 7807 Problem Details** (`application/problem+js
 
 ```json
 {
-  "type": "https://taskmanager.io/errors/not_found",
+  "type": "not_found",
   "title": "Resource Not Found",
   "status": 404,
   "detail": "Task with ID '...' was not found.",

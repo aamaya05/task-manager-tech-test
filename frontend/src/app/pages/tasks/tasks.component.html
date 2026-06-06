@@ -1,0 +1,38 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <span class="navbar-brand fw-bold">TaskManager</span>
+    <div class="d-flex align-items-center gap-3">
+      <span class="text-white-50 small">{{ username }}</span>
+      <button class="btn btn-outline-light btn-sm" (click)="logout()">Sign Out</button>
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid py-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="h5 fw-bold mb-0">My Tasks</h2>
+    <button class="btn btn-primary btn-sm" (click)="openCreateForm()">
+      + New Task
+    </button>
+  </div>
+
+  <div *ngIf="errorMessage" class="alert alert-danger py-2 small" role="alert">
+    {{ errorMessage }}
+  </div>
+
+  <app-task-table
+    [pagedResult]="pagedResult"
+    [loading]="loading"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+    (editTask)="openEditForm($event)"
+    (deleteTask)="onDeleteTask($event)"
+  ></app-task-table>
+</div>
+
+<app-task-form
+  *ngIf="showForm"
+  [task]="editingTask"
+  (saved)="onFormSaved()"
+  (cancelled)="onFormCancelled()"
+></app-task-form>

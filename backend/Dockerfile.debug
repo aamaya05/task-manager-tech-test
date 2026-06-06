@@ -1,0 +1,29 @@
+# ── Debug image — NOT for production use ──────────────────────────────────────
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS debug
+WORKDIR /src
+
+# Copy only project/solution files and restore dependencies.
+# Source files are NOT copied here — they are mounted at runtime via the
+# docker-compose.debug.yml volume, so the container always runs against
+# your live local source (enabling breakpoints to resolve correctly).
+COPY TaskManager.sln ./
+COPY src/TaskManager.Domain/TaskManager.Domain.csproj             src/TaskManager.Domain/
+COPY src/TaskManager.Application/TaskManager.Application.csproj   src/TaskManager.Application/
+COPY src/TaskManager.Infrastructure/TaskManager.Infrastructure.csproj src/TaskManager.Infrastructure/
+COPY src/TaskManager.WebApi/TaskManager.WebApi.csproj             src/TaskManager.WebApi/
+
+RUN dotnet restore src/TaskManager.WebApi/TaskManager.WebApi.csproj
+
+# Install vsdbg — the VS Code / Visual Studio .NET remote debugger
+RUN apt-get update && apt-get install -y --no-install-recommends unzip curl \
+    && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src/src/TaskManager.WebApi
+
+EXPOSE 5000
+EXPOSE 5678
+
+# dotnet run compiles from the mounted source at startup.
+# obj/ and bin/ are shadowed by named volumes so writes succeed.
+ENTRYPOINT ["dotnet", "run", "--configuration", "Debug", "--no-launch-profile"]

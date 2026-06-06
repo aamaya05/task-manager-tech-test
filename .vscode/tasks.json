@@ -1,0 +1,35 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "build-api",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/backend/src/TaskManager.WebApi/TaskManager.WebApi.csproj",
+        "--configuration",
+        "Debug"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "docker-compose-debug-up",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build -d",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "docker-compose-debug-down",
+      "type": "shell",
+      "command": "docker compose -f docker-compose.yml -f docker-compose.debug.yml down",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": []
+    }
+  ]
+}

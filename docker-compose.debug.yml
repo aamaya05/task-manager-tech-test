@@ -1,0 +1,50 @@
+# Docker Compose override for VS Code debugging on macOS.
+# Usage: docker compose -f docker-compose.yml -f docker-compose.debug.yml up --build
+#
+# This overrides only the `api` service. All other services (db, migrate, frontend)
+# are inherited unchanged from docker-compose.yml.
+
+services:
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.debug
+    container_name: taskmanager-api-debug
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ASPNETCORE_URLS: "http://+:5000"
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=taskmanager;Username=postgres;Password=postgres"
+      Jwt__Secret: "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_IN_PRODUCTION_MIN_32_CHARS"
+      Jwt__Issuer: "taskmanager-api"
+      Jwt__Audience: "taskmanager-client"
+      Jwt__ExpiryHours: "1"
+    ports:
+      - "5001:5000"    # API — same host port as production compose
+      - "5678:5678"    # vsdbg attach port
+    volumes:
+      # Mount source read-write so the debugger can resolve breakpoints to local files.
+      # Named volumes shadow the obj/ and bin/ directories so dotnet run can write
+      # build artifacts without hitting the host filesystem (which caused the read-only error).
+      - ./backend/src:/src/src
+
+      # Shadow obj/ folders per project with writable named volumes
+      - debug_obj_domain:/src/src/TaskManager.Domain/obj
+      - debug_obj_application:/src/src/TaskManager.Application/obj
+      - debug_obj_infrastructure:/src/src/TaskManager.Infrastructure/obj
+      - debug_obj_webapi:/src/src/TaskManager.WebApi/obj
+
+      # Shadow bin/ folders per project
+      - debug_bin_domain:/src/src/TaskManager.Domain/bin
+      - debug_bin_application:/src/src/TaskManager.Application/bin
+      - debug_bin_infrastructure:/src/src/TaskManager.Infrastructure/bin
+      - debug_bin_webapi:/src/src/TaskManager.WebApi/bin
+
+volumes:
+  debug_obj_domain:
+  debug_obj_application:
+  debug_obj_infrastructure:
+  debug_obj_webapi:
+  debug_bin_domain:
+  debug_bin_application:
+  debug_bin_infrastructure:
+  debug_bin_webapi:

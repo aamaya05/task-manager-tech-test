@@ -1,0 +1,83 @@
+<!-- Modal backdrop -->
+<div class="modal d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title fw-bold">{{ isEditing ? 'Edit Task' : 'New Task' }}</h5>
+        <button type="button" class="btn-close" (click)="onCancel()" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body">
+        <div *ngIf="errorMessage" class="alert alert-danger py-2 small" role="alert">
+          {{ errorMessage }}
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #taskForm="ngForm" novalidate>
+
+          <div class="mb-3">
+            <label for="title" class="form-label fw-medium">Title <span class="text-danger">*</span></label>
+            <input
+              id="title"
+              type="text"
+              class="form-control"
+              [(ngModel)]="title"
+              name="title"
+              placeholder="Task title"
+              required
+              maxlength="200"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label fw-medium">Description</label>
+            <textarea
+              id="description"
+              class="form-control"
+              [(ngModel)]="description"
+              name="description"
+              rows="3"
+              placeholder="Optional description"
+              maxlength="2000"
+            ></textarea>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+              <label for="status" class="form-label fw-medium">Status</label>
+              <select
+                id="status"
+                class="form-select"
+                [(ngModel)]="status"
+                name="status"
+              >
+                <option *ngFor="let s of statusOptions" [value]="s">{{ s }}</option>
+              </select>
+            </div>
+
+            <div class="col-sm-6">
+              <label for="dueDate" class="form-label fw-medium">Due Date</label>
+              <input
+                id="dueDate"
+                type="date"
+                class="form-control"
+                [(ngModel)]="dueDate"
+                name="dueDate"
+              />
+            </div>
+          </div>
+
+          <div class="modal-footer px-0 pb-0 border-0">
+            <button type="button" class="btn btn-outline-secondary" (click)="onCancel()">Cancel</button>
+            <button type="submit" class="btn btn-primary" [disabled]="loading">
+              <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+              {{ loading ? 'Saving...' : (isEditing ? 'Save Changes' : 'Create Task') }}
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

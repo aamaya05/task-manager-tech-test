@@ -1,0 +1,29 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.swp
+appsettings.Development.json
+
+# NuGet
+*.nupkg
+.nuget/
+
+# Test results
+TestResults/
+coverage-report/
+*.cobertura.xml
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# Docker
+.dockerignore
+
+# OS
+.DS_Store
+Thumbs.db

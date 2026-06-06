@@ -1,0 +1,41 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      // ── Attach to the API running inside Docker ──────────────────────────
+      "name": "Docker: Attach to API",
+      "type": "coreclr",
+      "request": "attach",
+      "processId": "${command:pickRemoteProcess}",
+      "pipeTransport": {
+        "pipeProgram": "docker",
+        "pipeArgs": ["exec", "-i", "taskmanager-api-debug"],
+        "pipeCwd": "${workspaceFolder}",
+        "debuggerPath": "/vsdbg/vsdbg",
+        "quoteArgs": false
+      },
+      "sourceFileMap": {
+        // Maps the path inside the container to your local source folder
+        "/src/src": "${workspaceFolder}/backend/src"
+      },
+      "justMyCode": true
+    },
+    {
+      // ── Run the API locally without Docker (plain dotnet run) ────────────
+      "name": "Local: Run API (no Docker)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-api",
+      "program": "${workspaceFolder}/backend/src/TaskManager.WebApi/bin/Debug/net9.0/TaskManager.WebApi.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/backend/src/TaskManager.WebApi",
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_URLS": "http://localhost:5000"
+      },
+      "sourceFileMap": {
+        "/Views": "${workspaceFolder}/Views"
+      }
+    }
+  ]
+}

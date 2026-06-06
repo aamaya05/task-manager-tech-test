@@ -1,0 +1,78 @@
+<div class="min-vh-100 d-flex align-items-center justify-content-center bg-light">
+  <div class="card shadow-sm" style="width: 100%; max-width: 440px;">
+    <div class="card-body p-4">
+      <h1 class="card-title h4 mb-1 fw-bold text-center">Create Account</h1>
+      <p class="text-center text-muted mb-4 small">Join TaskManager today</p>
+
+      <div *ngIf="errorMessage" class="alert alert-danger py-2 small" role="alert">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="alert alert-success py-2 small" role="alert">
+        {{ successMessage }}
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm" novalidate>
+        <div class="mb-3">
+          <label for="username" class="form-label fw-medium">Username</label>
+          <input
+            id="username"
+            type="text"
+            class="form-control"
+            [(ngModel)]="username"
+            name="username"
+            placeholder="john_doe"
+            required
+            minlength="3"
+            maxlength="50"
+            autocomplete="username"
+          />
+          <div class="form-text">3–50 characters.</div>
+        </div>
+
+        <div class="mb-3">
+          <label for="email" class="form-label fw-medium">Email</label>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            [(ngModel)]="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+          />
+        </div>
+
+        <div class="mb-4">
+          <label for="password" class="form-label fw-medium">Password</label>
+          <input
+            id="password"
+            type="password"
+            class="form-control"
+            [(ngModel)]="password"
+            name="password"
+            placeholder="Min 8 characters"
+            required
+            minlength="8"
+            autocomplete="new-password"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100"
+          [disabled]="loading"
+        >
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          {{ loading ? 'Creating account...' : 'Create Account' }}
+        </button>
+      </form>
+
+      <hr class="my-3" />
+      <p class="text-center text-muted small mb-0">
+        Already have an account?
+        <a routerLink="/login" class="text-decoration-none">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

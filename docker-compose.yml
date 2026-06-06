@@ -1,0 +1,65 @@
+version: '3.9'
+
+services:
+  db:
+    image: postgres:16
+    container_name: taskmanager-db
+    environment:
+      POSTGRES_DB: taskmanager
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  migrate:
+    image: postgres:16
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend/src/TaskManager.Infrastructure/Migrations:/migrations
+    entrypoint: >
+      sh -c "
+        psql 'host=db port=5432 dbname=taskmanager user=postgres password=postgres' -f /migrations/001_create_users_table.sql &&
+        psql 'host=db port=5432 dbname=taskmanager user=postgres password=postgres' -f /migrations/002_create_tasks_table.sql &&
+        psql 'host=db port=5432 dbname=taskmanager user=postgres password=postgres' -f /migrations/003_seed_data.sql
+      "
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: taskmanager-api
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=taskmanager;Username=postgres;Password=postgres"
+      Jwt__Secret: "CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_IN_PRODUCTION_MIN_32_CHARS"
+      Jwt__Issuer: "taskmanager-api"
+      Jwt__Audience: "taskmanager-client"
+      Jwt__ExpiryHours: "1"
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ASPNETCORE_URLS: "http://+:5000"
+    ports:
+      - "5001:5000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: taskmanager-frontend
+    depends_on:
+      - api
+    ports:
+      - "4200:80"
+
+volumes:
+  pgdata:
